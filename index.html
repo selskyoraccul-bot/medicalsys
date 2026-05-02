@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DOCTOR-LITE Web</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>СИСТЕМА УЧЁТА - ДОКТОР-ЛАЙТ</h1>
+    <button id="logout-btn" class="hidden">Выйти</button>
+  </header>
+
+  <main class="container">
+    <section id="auth-panel" class="card auth-card">
+      <div class="auth-tabs">
+        <button type="button" id="show-login-btn" class="auth-tab active">Вход</button>
+        <button type="button" id="show-register-btn" class="auth-tab">Регистрация врача</button>
+      </div>
+
+      <div id="login-block">
+        <form id="login-form" class="auth-form">
+          <h2>Вход в систему</h2>
+          <p class="hint">Укажите ФИО и пароль, как при регистрации.</p>
+          <label>
+            ФИО врача
+            <input id="login-fullname" name="login-fullname" type="text" autocomplete="name" />
+          </label>
+          <label>
+            Пароль
+            <input id="login-password" name="login-password" type="password" autocomplete="current-password" />
+          </label>
+          <button type="submit" id="login-btn">Войти</button>
+        </form>
+      </div>
+
+      <div id="register-block" class="hidden">
+        <form id="register-form" class="auth-form">
+          <h2>Регистрация врача</h2>
+          <label>
+            ФИО врача
+            <input id="reg-fullname" name="reg-fullname" type="text" autocomplete="name" />
+          </label>
+          <label>
+            Должность
+            <input id="reg-position" name="reg-position" type="text" placeholder="Например: стоматолог-терапевт" />
+          </label>
+          <label>
+            Кабинет
+            <input id="reg-cabinet" name="reg-cabinet" type="text" placeholder="Номер кабинета" />
+          </label>
+          <label>
+            Пароль
+            <input id="reg-password" name="reg-password" type="password" autocomplete="new-password" />
+          </label>
+          <button type="submit" id="register-btn">Зарегистрироваться</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="app-panel" class="hidden">
+      <div class="workspace">
+        <aside class="card side">
+          <div class="row row-between">
+            <h2>Истории людей</h2>
+            <button id="add-patient-btn">Добавить</button>
+          </div>
+          <input id="patient-search" type="search" placeholder="Поиск пациента..." />
+          <ul id="patients-list" class="list"></ul>
+        </aside>
+
+        <section class="card main-content">
+          <h2>Информация о пациенте</h2>
+          <form id="patient-info-form" class="form-grid">
+            <label>ФИО<input id="info-name" type="text" required /></label>
+            <label>Дата рождения<input id="info-birth" type="text" placeholder="01.01.1990" /></label>
+            <label>Телефон<input id="info-phone" type="text" /></label>
+            <label class="full">Комментарий<textarea id="info-notes"></textarea></label>
+            <button type="submit" class="full">Сохранить информацию</button>
+          </form>
+
+          <div class="tabs">
+            <button class="tab-btn active" data-tab="analyses">Анализы</button>
+            <button class="tab-btn" data-tab="diagnosis">Диагноз</button>
+            <button class="tab-btn" data-tab="guardians">Опекуны</button>
+            <button class="tab-btn" data-tab="templates">Шаблоны</button>
+          </div>
+
+          <section id="tab-analyses" class="tab-content active">
+            <div class="split">
+              <div>
+                <div class="row row-between">
+                  <h3>Документы анализов</h3>
+                  <button id="add-analysis-btn">Создать</button>
+                </div>
+                <ul id="analyses-list" class="list"></ul>
+              </div>
+              <div>
+                <h3>Текст документа</h3>
+                <textarea id="analysis-text"></textarea>
+                <button id="save-analysis-btn">Сохранить (доступно всем)</button>
+              </div>
+            </div>
+          </section>
+
+          <section id="tab-diagnosis" class="tab-content">
+            <h3>Введите диагноз вручную</h3>
+            <textarea id="diagnosis-text"></textarea>
+            <button id="save-diagnosis-btn">Сохранить диагноз</button>
+          </section>
+
+          <section id="tab-guardians" class="tab-content">
+            <div class="split">
+              <div>
+                <div class="row row-between">
+                  <h3>Список опекунов</h3>
+                  <button id="add-guardian-btn">Добавить</button>
+                </div>
+                <ul id="guardians-list" class="list"></ul>
+                <button id="delete-guardian-btn" class="danger">Удалить опекуна</button>
+              </div>
+              <form id="guardian-form">
+                <label>ФИО<input id="guardian-name" type="text" required /></label>
+                <label>Телефон<input id="guardian-phone" type="text" /></label>
+                <label>Степень родства<input id="guardian-relation" type="text" /></label>
+                <label>Заметки<textarea id="guardian-notes"></textarea></label>
+                <button type="submit">Сохранить (доступно всем)</button>
+              </form>
+            </div>
+          </section>
+
+          <section id="tab-templates" class="tab-content">
+            <div class="row row-between">
+              <h3>Общие шаблоны документов</h3>
+              <input id="template-file" type="file" />
+            </div>
+            <ul id="templates-list" class="list"></ul>
+            <div class="row">
+              <button id="upload-template-btn">Загрузить документ</button>
+              <button id="open-template-btn" class="secondary">Открыть</button>
+              <button id="delete-template-btn" class="danger">Удалить шаблон</button>
+            </div>
+          </section>
+        </section>
+
+        <aside class="card right-rail">
+          <h2>Врачи</h2>
+          <p class="hint">Сигнал активности — каждые 5 сек. Зелёный кружок — онлайн, красный — офлайн (нет ответа за минуту).</p>
+          <ul id="doctors-status-list" class="list list-compact"></ul>
+
+          <h2 class="rail-heading">Журнал изменений</h2>
+          <div class="log-table-wrap">
+            <table id="activity-log-table" class="log-table">
+              <thead>
+                <tr>
+                  <th>Время</th>
+                  <th>Врач</th>
+                  <th>Изменение</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>
