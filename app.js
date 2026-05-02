@@ -15,6 +15,7 @@ let pingJob = null;
 const authPanel = document.getElementById("auth-panel");
 const appPanel = document.getElementById("app-panel");
 const logoutBtn = document.getElementById("logout-btn");
+const deleteAccountBtn = document.getElementById("delete-account-btn");
 const loginBlock = document.getElementById("login-block");
 const registerBlock = document.getElementById("register-block");
 
@@ -84,7 +85,9 @@ function bindAuthPanelEvents() {
 function bindEvents() {
   bindAuthPanelEvents();
   logoutBtn?.addEventListener("click", logoutDoctor);
+  deleteAccountBtn?.addEventListener("click", deleteOwnAccount);
   document.getElementById("add-patient-btn")?.addEventListener("click", addPatient);
+  document.getElementById("delete-patient-btn")?.addEventListener("click", deletePatient);
   document.getElementById("patient-search")?.addEventListener("input", renderPatients);
   document.getElementById("patient-info-form")?.addEventListener("submit", savePatientInfo);
   document.getElementById("add-analysis-btn")?.addEventListener("click", addAnalysis);
@@ -331,6 +334,7 @@ function renderAuthState() {
   authPanel.classList.toggle("hidden", loggedIn);
   appPanel.classList.toggle("hidden", !loggedIn);
   logoutBtn.classList.toggle("hidden", !loggedIn);
+  deleteAccountBtn?.classList.toggle("hidden", !loggedIn);
   if (loggedIn) renderApp();
 }
 
@@ -414,6 +418,57 @@ function addPatient() {
   logChange(`Добавлен пациент: ${name}`);
   saveState();
   renderPatients();
+}
+
+function deletePatient() {
+  if (!currentPatientId) return alert("Сначала выберите пациента в списке.");
+  const patient = state.patients.find((p) => p.id === currentPatientId);
+  if (!patient) return;
+  const ok = confirm(`Удалить пациента '${patient.fullName}' и все связанные записи?`);
+  if (!ok) return;
+
+  state.patients = state.patients.filter((p) => p.id !== currentPatientId);
+  state.analyses = state.analyses.filter((a) => a.patientId !== currentPatientId);
+  state.diagnoses = state.diagnoses.filter((d) => d.patientId !== currentPatientId);
+  state.guardians = state.guardians.filter((g) => g.patientId !== currentPatientId);
+
+  logChange(`Удалён пациент: ${patient.fullName}`);
+  currentPatientId = null;
+  currentAnalysisId = null;
+  currentGuardianId = null;
+  saveState();
+  renderApp();
+}
+
+function deleteOwnAccount() {
+  const doctor = getCurrentDoctor();
+  if (!doctor) return;
+  if (state.doctors.length <= 1) {
+    alert("Нельзя удалить последний аккаунт врача.");
+    return;
+  }
+  const ok = confirm(`Удалить ваш аккаунт '${doctor.fullName}'? После этого потребуется вход под другим врачом.`);
+  if (!ok) return;
+
+  state.activityLog.unshift({
+    id: uid("log"),
+    at: new Date().toISOString(),
+    doctorId: doctor.id,
+    doctorName: doctor.fullName,
+    message: "Врач удалил свой аккаунт",
+  });
+  if (state.activityLog.length > ACTIVITY_LOG_MAX) state.activityLog.length = ACTIVITY_LOG_MAX;
+
+  state.doctors = state.doctors.filter((d) => d.id !== doctor.id);
+  setCurrentDoctorId(null);
+  stopPing();
+  currentPatientId = null;
+  currentAnalysisId = null;
+  currentGuardianId = null;
+  currentTemplateId = null;
+  saveState();
+  renderAuthState();
+  alert("Ваш аккаунт удалён.");
 }
 
 function fillPatientInfo() {
