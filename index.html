@@ -9,7 +9,10 @@
 <body>
   <header class="topbar">
     <h1>СИСТЕМА УЧЁТА - ДОКТОР-ЛАЙТ</h1>
-    <button id="logout-btn" class="hidden">Выйти</button>
+    <div class="topbar-actions">
+      <button id="delete-account-btn" class="danger hidden">Удалить мой аккаунт</button>
+      <button id="logout-btn" class="hidden">Выйти</button>
+    </div>
   </header>
 
   <main class="container">
@@ -64,7 +67,10 @@
         <aside class="card side">
           <div class="row row-between">
             <h2>Истории людей</h2>
-            <button id="add-patient-btn">Добавить</button>
+            <div class="row">
+              <button id="add-patient-btn">Добавить</button>
+              <button id="delete-patient-btn" class="danger">Удалить</button>
+            </div>
           </div>
           <input id="patient-search" type="search" placeholder="Поиск пациента..." />
           <ul id="patients-list" class="list"></ul>
