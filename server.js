@@ -5,7 +5,8 @@ const path = require("path");
 const HOST = "0.0.0.0";
 const PORT = Number(process.env.PORT) || 3000;
 const ROOT = __dirname;
-const DB_FILE = path.join(ROOT, "db.json");
+const DATA_DIR = process.env.DATA_DIR || path.join(ROOT, "data");
+const DB_FILE = process.env.DB_FILE_PATH || path.join(DATA_DIR, "db.json");
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -59,6 +60,9 @@ function mergePreserveDoctorPresence(prev, incoming) {
 }
 
 function ensureDb() {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
   if (!fs.existsSync(DB_FILE)) {
     fs.writeFileSync(DB_FILE, JSON.stringify(defaultState(), null, 2), "utf8");
   }
@@ -170,5 +174,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, HOST, () => {
+  ensureDb();
   console.log(`DOCTOR-LITE web server started: http://localhost:${PORT}`);
+  console.log(`Database file: ${DB_FILE}`);
 });
